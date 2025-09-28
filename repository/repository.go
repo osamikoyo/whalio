@@ -65,6 +65,27 @@ func (r *Repository) GetArtistByID(ctx context.Context, id uint) (*models.Artist
 	return &artist, nil
 }
 
+func (r *Repository) ListArtists(ctx context.Context) ([]models.Artist, error) {
+	log := r.logger.With().Str("method", "ListArtists").Logger()
+	log.Info().Msg("Fetching artists")
+
+	var albums []models.Artist
+	err := r.db.WithContext(ctx).
+		Find(&albums).Error
+	if err != nil {
+		log.Error().Stack().Err(err).Msg("Failed to fetch artists")
+		return nil, errors.Wrap(err, "failed to fetch artists")
+	}
+
+	if len(albums) == 0 {
+		log.Warn().Msg("No artists found")
+		return []models.Artist{}, nil
+	}
+
+	log.Debug().Int("count", len(albums)).Msg("Albums fetched successfully")
+	return albums, nil
+}
+
 func (r *Repository) UpdateArtist(ctx context.Context, artist *models.Artist) error {
 	log := r.logger.With().Str("method", "UpdateArtist").Uint("id", artist.ID).Logger()
 	log.Info().Msg("Updating artist")
