@@ -1,0 +1,104 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+*.prof
+coverage.html
+coverage.out
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Build outputs
+static/css/output.css
+*.min.css
+*.min.js
+
+# Generated files
+*_templ.go
+templates/*_templ.go
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+tmp/
+temp/
+.tmp/
+
+# NPM/Yarn files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build artifacts
+*.tar.gz
+*.zip
+*.rar
+
+# Development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local configuration overrides
+config.local.json
+config.local.yaml
+config.local.yml
+
+# Hot reload / dev server files
+.hot-reload
+.dev-server
