@@ -18,6 +18,8 @@ type Config struct {
 	WriteTimeout time.Duration `json:"write_timeout"`
 	IdleTimeout  time.Duration `json:"idle_timeout"`
 
+	// Sqlite db file path
+	DatabasePath string `json:"database_path"`
 	// Development settings
 	Debug       bool   `json:"debug"`
 	Environment string `json:"environment"`
