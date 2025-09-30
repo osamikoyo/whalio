@@ -59,6 +59,7 @@ const (
 	DefaultLogLevel     = "info"
 	DefaultLogFormat    = "console"
 	DefaultRateLimit    = 100
+	DefaultDatabasePath = "database/database.db"
 )
 
 // Load loads configuration from environment variables and command line flags
@@ -72,6 +73,7 @@ func Load() *Config {
 		Debug:            getBoolEnv("DEBUG", false),
 		UploadDir:        getEnv("UPLOAD_DIR", DefaultUploadDir),
 		Environment:      getEnv("ENVIRONMENT", DefaultEnvironment),
+		DatabasePath:     getEnv("DATABASE_PATH", DefaultDatabasePath),
 		StaticDir:        getEnv("STATIC_DIR", DefaultStaticDir),
 		ImageDir:         getEnv("IMAGE_DIR", DefaultImageDir),
 		LogLevel:         getEnv("LOG_LEVEL", DefaultLogLevel),
