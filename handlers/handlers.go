@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"whalio/core"
 	"whalio/templates"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type Handlers struct {
-	counter int
+	core *core.Core
 }
 
-func New() *Handlers {
+func New(core *core.Core) *Handlers {
 	return &Handlers{
-		counter: 0,
+		core: core,
 	}
 }
 
@@ -61,8 +62,7 @@ func (h *Handlers) About(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Health(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status":  "healthy",
-		"counter": h.counter,
+		"status": "healthy",
 	})
 }
 
@@ -131,4 +131,3 @@ func ParseIntParam(r *http.Request, param string, defaultValue int) int {
 
 	return defaultValue
 }
-
