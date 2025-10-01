@@ -1,0 +1,31 @@
+package templates
+
+import "whalio/models"
+
+templ Library(albums []models.Album, artists []models.Artist) {
+	@Layout("Library") {
+		<div class="join">
+			for _, album := range albums {
+				<div class="avatar">
+					<div class="w-24 rounded">
+						<img src={album.ImagePath}/>
+					</div>
+				</div>
+
+                <h2 class="text-primary">{album.Name}</h2>
+                <a>{album.Artist.Name}</a>
+			}
+		</div>
+		<div class="join">
+			for _, artist := range artists {
+				<div class="avatar">
+					<div class="w-24 rounded">
+						<img src={artist.ImagePath}/>
+					</div>
+				</div>
+
+                <h2 class="text-primary">{artist.Name}</h2>
+			}
+		</div>
+	}
+}
