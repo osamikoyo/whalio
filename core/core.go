@@ -36,20 +36,39 @@ func (c *Core) CreateArtist(name string, imagesource io.Reader) error {
 
 	artist := models.NewArtist(name)
 
-    artist.ImagePath = artist.GetImageFilepath(c.cfg.ImageDir)
+	artist.ImagePath = artist.GetImageFilepath(c.cfg.ImageDir)
 
-	if err := c.repository.CreateArtist(ctx, artist);err != nil{
+	if err := c.repository.CreateArtist(ctx, artist); err != nil {
 		return err
 	}
 
-	return  c.storage.SaveFile(imagesource, artist.ImagePath)
+	return c.storage.SaveFile(imagesource, artist.ImagePath)
 }
 
-func (c *Core) AddAlbum(name string, artistID uint, desc string, imagesource io.Reader, imageext string) error {
+func (c *Core) PlaySong(id uint) (io.Reader, int64, error) {
+	ctx, cancel := c.context()
+	defer cancel()
+
+	song, err := c.repository.GetSongByID(ctx, id)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	file, size, err := c.storage.OpenFile(song.Filepath(c.cfg.UploadDir))
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return file, size, nil
+}
+
+func (c *Core) AddAlbum(name string, artistID uint, desc string, imagesource io.Reader) error {
 	ctx, cancel := c.context()
 	defer cancel()
 
 	album := models.NewAlbum(name, desc, artistID)
+
+	album.ImagePath = album.ImageFilepath(c.cfg.ImageDir)
 
 	if err := c.storage.SaveFile(imagesource, album.ImageFilepath(c.cfg.ImageDir)); err != nil {
 		return err
@@ -84,7 +103,7 @@ func (c *Core) ChangeAlbum(songID uint, albumID uint) error {
 	defer cancel()
 
 	song, err := c.repository.GetSongByID(ctx, songID)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -92,7 +111,7 @@ func (c *Core) ChangeAlbum(songID uint, albumID uint) error {
 
 	song.AlbumID = albumID
 
-	if err = c.repository.UpdateSong(ctx, song);err != nil{
+	if err = c.repository.UpdateSong(ctx, song); err != nil {
 		return err
 	}
 
@@ -114,3 +133,18 @@ func (c *Core) GetSomeArtist() ([]models.Artist, error) {
 
 	return c.repository.ListArtists(ctx)
 }
+
+func (c *Core) GetAlbum(id uint) (*models.Album, error) {
+	ctx, cancel := c.context()
+	defer cancel()
+
+	return c.repository.GetAlbumByID(ctx, id)
+}
+
+func (c *Core) GetArtist(id uint) (*models.Artist, error) {
+	ctx, cancel := c.context()
+	defer cancel()
+
+	return c.repository.GetArtistByID(ctx, id)
+}
+
