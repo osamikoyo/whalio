@@ -63,6 +63,28 @@ func (s *Storage) ListFiles(dir string) ([]string, error) {
 	return names, nil
 }
 
+func (s *Storage) RenameFile(destPath string, srcPath string) error {
+	dest, err := os.Open(destPath)
+	if err != nil{
+		s.logger.Error().Msgf("failed open dest: %s: %v", destPath, err)
+		return err
+	}
+
+	src, err := os.Open(srcPath)
+	if err != nil{
+		s.logger.Error().Msgf("failed open source: %s: %v", srcPath, err)
+		return err
+	}
+
+
+	if _, err = io.Copy(dest, src);err != nil{
+		s.logger.Error().Msgf("failed copy: %v", err)
+		return err
+	}
+
+	return nil
+}
+
 func (s *Storage) GetFile(dest io.Writer, name string) error {
 	if _, err := os.Stat(name); os.IsNotExist(err) {
 		s.logger.Error().Msgf("failed get stat of %s: %v", name, err)
@@ -83,4 +105,21 @@ func (s *Storage) GetFile(dest io.Writer, name string) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) OpenFile(name string) (io.Reader, int64, error) {
+	stat, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		s.logger.Error().Msgf("failed get stat of %s: %v", name, err)
+		return nil, 0, err
+	}
+
+	source, err := os.Open(name)
+	if err != nil {
+		s.logger.Error().Msgf("failed open: %s: %v", name, err)
+
+		return nil, 0, err
+	}
+
+	return source, stat.Size(), nil
 }
