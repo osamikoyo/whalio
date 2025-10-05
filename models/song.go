@@ -2,11 +2,12 @@ package models
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"gorm.io/gorm"
 )
 
-const PathKeyString = "%s-%s-%s"
+const PathKeyString = "%s-%s-%s.mp3"
 
 type Song struct {
     gorm.Model
@@ -22,7 +23,7 @@ func NewSong(name string, albumID uint) *Song {
 	}
 }
 
-func (s *Song) Filepath() string {
-	return fmt.Sprintf(PathKeyString, s.Name, s.Album.Name, s.Album.Artist.Name)
+func (s *Song) Filepath(uploadDir string) string {
+	return filepath.Join(uploadDir, fmt.Sprintf(PathKeyString, s.Name, s.Album.Name, s.Album.Artist.Name))
 }
 
