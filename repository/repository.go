@@ -65,6 +65,26 @@ func (r *Repository) GetArtistByID(ctx context.Context, id uint) (*models.Artist
 	return &artist, nil
 }
 
+func (r *Repository) GetArtistByName(ctx context.Context, name string) (*models.Artist, error) {
+	log := r.logger.With().Str("method", "GetArtistByName").Str("name", name).Logger()
+	log.Info().Msg("Fetching artist")
+
+	var artist models.Artist
+	err := r.db.WithContext(ctx).
+		Where("name = ?", name).
+		First(&artist).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Warn().Msg("Artist not found")
+			return nil, ErrArtistNotFound
+		}
+		log.Error().Stack().Err(err).Msg("Failed to get artist")
+		return nil, errors.Wrap(err, "failed to get artist")
+	}
+	log.Debug().Msg("Artist fetched successfully")
+	return &artist, nil
+}
+
 func (r *Repository) ListArtists(ctx context.Context) ([]models.Artist, error) {
 	log := r.logger.With().Str("method", "ListArtists").Logger()
 	log.Info().Msg("Fetching artists")
