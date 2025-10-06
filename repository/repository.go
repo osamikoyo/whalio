@@ -143,7 +143,10 @@ func (r *Repository) DeleteArtist(ctx context.Context, id uint) error {
 }
 
 func (r *Repository) CreateAlbum(ctx context.Context, album *models.Album) error {
-	log := r.logger.With().Str("method", "CreateAlbum").Str("name", album.Name).Uint("artist_id", album.ArtistID).Logger()
+	log := r.logger.With().Str("method", "CreateAlbum").Str("name", album.Name).
+	Uint("artist_id", album.ArtistID).
+	Str("image_path", album.ImagePath).
+	Logger()
 	log.Info().Msg("Creating new album")
 
 	var artist models.Artist
