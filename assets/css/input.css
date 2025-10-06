@@ -181,3 +181,332 @@
   opacity: 1;
   transform: translateX(0);
 }
+
+/* Enhanced animations */
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+/* Grid pattern for backgrounds */
+.bg-grid-pattern {
+  background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+[data-theme="dark"] .bg-grid-pattern {
+  background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+}
+
+/* Enhanced card hover effects */
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+}
+
+/* Tab content animations */
+.tab-content {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading improvements */
+.loading.loading-spinner {
+  border-color: currentColor;
+  border-right-color: transparent;
+}
+
+/* Enhanced button effects */
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Smooth focus states */
+.input:focus,
+.textarea:focus,
+.select:focus {
+  box-shadow: 0 0 0 2px hsl(var(--b1)), 0 0 0 4px hsl(var(--p) / 0.2);
+  transform: translateY(-1px);
+}
+
+/* Stats enhancement */
+.stat {
+  padding: 1.5rem;
+}
+
+.stat-value {
+  font-weight: 800;
+}
+
+/* Modal enhancements */
+.modal-box {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Progress bar enhancements */
+.progress {
+  overflow: hidden;
+}
+
+.progress::-webkit-progress-bar {
+  border-radius: 1rem;
+}
+
+.progress::-webkit-progress-value {
+  border-radius: 1rem;
+  transition: width 0.5s ease;
+}
+
+/* Badge improvements */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Alert improvements */
+.alert {
+  border-left: 4px solid currentColor;
+}
+
+/* Rating improvements */
+.rating input {
+  transition: all 0.2s ease;
+}
+
+.rating input:hover {
+  transform: scale(1.1);
+}
+
+/* Mockup code improvements */
+.mockup-code {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border: 1px solid #475569;
+}
+
+.mockup-code pre {
+  color: #e2e8f0;
+  font-family: 'Fira Code', 'JetBrains Mono', 'Monaco', monospace;
+}
+
+/* Music-specific patterns and styles */
+.bg-music-pattern {
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.3) 0%, transparent 50%);
+}
+
+/* Music player styles */
+.music-player {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .music-player {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Album card hover effects */
+.album-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.album-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.album-card:hover::before {
+  left: 100%;
+}
+
+/* Line clamping for text truncation */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Vinyl record animation */
+@keyframes vinyl-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vinyl-spin {
+  animation: vinyl-spin 3s linear infinite;
+}
+
+/* Sound wave animation */
+@keyframes sound-wave {
+  0%, 100% {
+    height: 20%;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+.sound-wave {
+  display: inline-block;
+  width: 3px;
+  height: 20px;
+  background: currentColor;
+  margin: 0 1px;
+  animation: sound-wave 1s ease-in-out infinite;
+}
+
+.sound-wave:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.sound-wave:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.sound-wave:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.sound-wave:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+/* Gradient text effects */
+.gradient-text {
+  background: linear-gradient(45deg, hsl(var(--p)), hsl(var(--s)), hsl(var(--a)));
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Music note floating animation */
+@keyframes float-notes {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+.floating-notes::after {
+  content: '♪ ♫ ♪';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: float-notes 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Player controls */
+.player-control {
+  transition: all 0.2s ease;
+}
+
+.player-control:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.player-control:active {
+  transform: scale(0.95);
+}
+
+/* Search input with music icon */
+.search-music {
+  position: relative;
+}
+
+.search-music::before {
+  content: '🎵';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+.search-music input {
+  padding-left: 40px;
+}
