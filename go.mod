@@ -10,7 +10,10 @@ require (
 require (
 	github.com/a-h/templ v0.3.943
 	github.com/go-chi/httplog/v2 v2.0.7
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.31.0
+	gorm.io/driver/sqlite v1.6.0
+	gorm.io/gorm v1.31.0
 )
 
 require (
@@ -19,9 +22,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.32 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
-	gorm.io/driver/sqlite v1.6.0 // indirect
-	gorm.io/gorm v1.31.0 // indirect
 )

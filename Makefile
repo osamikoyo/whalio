@@ -81,7 +81,7 @@ build-quick: generate build-css build-go ## Quick build (no clean, no deps)
 build-go: ## Build Go binary
 	@echo "🔨 Building Go binary..."
 	@mkdir -p $(BINARY_DIR)
-	CGO_ENABLED=0 $(GOBUILD) -ldflags="-w -s" -o $(BINARY_DIR)/$(APP_NAME) $(MAIN_FILE)
+	CGO_ENABLED=1 $(GOBUILD) -ldflags="-w -s" -o $(BINARY_DIR)/$(APP_NAME) $(MAIN_FILE)
 
 .PHONY: build-css
 build-css: ## Build CSS with TailwindCSS
@@ -165,7 +165,7 @@ build-prod: clean deps generate ## Build for production
 	@echo "🏭 Building for production..."
 	@mkdir -p $(BINARY_DIR)
 	$(BUNX) tailwindcss -i $(CSS_INPUT) -o $(CSS_OUTPUT) --minify
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) \
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 $(GOBUILD) \
 		-ldflags="-w -s -X main.version=$$(git describe --tags --always --dirty)" \
 		-o $(BINARY_DIR)/$(APP_NAME)-linux-amd64 $(MAIN_FILE)
 	@echo "✅ Production build complete!"
