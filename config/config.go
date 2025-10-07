@@ -59,7 +59,7 @@ const (
 	DefaultLogLevel     = "info"
 	DefaultLogFormat    = "console"
 	DefaultRateLimit    = 100
-	DefaultDatabasePath = "database/database.db"
+	DefaultDatabasePath = "database.db"
 )
 
 // Load loads configuration from environment variables and command line flags
