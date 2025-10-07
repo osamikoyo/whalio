@@ -9,13 +9,19 @@ import (
 	"syscall"
 	"time"
 	"whalio/config"
+	"whalio/core"
 	"whalio/handlers"
+	"whalio/models"
+	"whalio/repository"
+	"whalio/storage"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog/v2"
 	"github.com/rs/zerolog"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -28,6 +34,33 @@ func main() {
 	// Setup logger
 	logger := setupLogger(cfg)
 
+	db, err := gorm.Open(sqlite.Open(cfg.DatabasePath))
+	if err != nil {
+		logger.Error().Msgf("Failed open database: %v", err)
+
+		return
+	}
+
+	if err = db.AutoMigrate(&models.Song{}, &models.Artist{}, &models.Album{}); err != nil {
+		logger.Error().Msgf("Failed make migration: %v", err)
+
+		return
+	}
+
+	logger.Info().Msgf("Successfully connected to db: %s", cfg.DatabasePath)
+
+	// Ensure required directories exist
+	if err := os.MkdirAll(cfg.UploadDir, 0o755); err != nil {
+		logger.Fatal().Err(err).Msgf("Failed to create upload dir: %s", cfg.UploadDir)
+	}
+	if err := os.MkdirAll(cfg.ImageDir, 0o755); err != nil {
+		logger.Fatal().Err(err).Msgf("Failed to create image dir: %s", cfg.ImageDir)
+	}
+	if err := os.MkdirAll(cfg.StaticDir, 0o755); err != nil {
+		logger.Fatal().Err(err).Msgf("Failed to create static dir: %s", cfg.StaticDir)
+	}
+
+	core := core.NewCore(repository.NewRepository(&logger, db), storage.NewStorage(&logger), cfg, 30*time.Second)
 	// Create router
 	r := chi.NewRouter()
 
@@ -35,7 +68,7 @@ func main() {
 	setupMiddleware(r, cfg)
 
 	// Initialize handlers
-	h := handlers.New()
+	h := handlers.New(core)
 
 	// Register routes
 	h.RegisterRoutes(r)
