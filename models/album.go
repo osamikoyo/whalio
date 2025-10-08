@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"gorm.io/gorm"
 )
@@ -14,8 +13,8 @@ type Album struct {
 	Name        string
 	Description string
 	ArtistID    uint
-	Year int
-	ImagePath string
+	Year        int
+	ImagePath   string
 	Artist      Artist `gorm:"foreignKey:ArtistID"`
 	Songs       []Song `gorm:"foreignKey:AlbumID"`
 }
@@ -25,11 +24,10 @@ func NewAlbum(name string, desc string, year int, artistID uint) *Album {
 		Name:        name,
 		Description: desc,
 		ArtistID:    artistID,
-		Year: year,
+		Year:        year,
 	}
 }
 
-func (a *Album) ImageFilepath(imageDir string) string {
-	return filepath.Join(imageDir, fmt.Sprintf(ImageFilepathKey, a.Name, a.ArtistID))
+func (a *Album) ImageFilepath() string {
+	return fmt.Sprintf(ImageFilepathKey, a.Name, a.ArtistID)
 }
-
