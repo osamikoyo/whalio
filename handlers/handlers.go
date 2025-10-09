@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"whalio/core"
-	"whalio/templates"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -30,40 +29,33 @@ func (h *Handlers) RegisterRoutes(r *chi.Mux) {
 	// Page routes
 	r.Get("/", h.Index)
 	r.Get("/about", h.About)
+	r.Get("/album/{id}", h.Album)
+	r.Get("/artist/{id}", h.Artist)
+	r.Get("/library", h.Library)
+	r.Get("/create/album", h.CreateAlbumPage)
+	r.Get("/create/artist", h.CreateArtistPage)
+	r.Get("/upload", h.UploadSongsPage)
+
+	// Streaming routes
+	r.Get("/stream/{id}", h.StreamAudio)
 
 	// API routes
 	r.Route("/api", func(r chi.Router) {
-
+		r.Post("/create/album", h.CreateAlbum)
+		r.Post("/create/artist", h.CreateArtist)
+		r.Post("/songs/upload", h.UploadSongs)
+		r.Get("/stats", h.GetStats)
+		r.Get("/search", h.SearchContent)
+		r.Get("/delete/album/{id}", h.DeleteAlbum)
+		r.Get("/delete/artist/{id}", h.DeleteArtist)
+		// Player endpoints
+		r.Get("/song/{id}", h.GetSongInfo)
+		// Album endpoints
+		r.Get("/album/{id}/songs", h.GetAlbumSongs)
 	})
 
 	// Health check
 	r.Get("/health", h.Health)
-}
-
-// Index renders the main page
-func (h *Handlers) Index(w http.ResponseWriter, r *http.Request) {
-	component := templates.Index()
-	if err := component.Render(r.Context(), w); err != nil {
-		http.Error(w, "Failed to render template", http.StatusInternalServerError)
-		return
-	}
-}
-
-// About renders the about page
-func (h *Handlers) About(w http.ResponseWriter, r *http.Request) {
-	component := templates.About()
-	if err := component.Render(r.Context(), w); err != nil {
-		http.Error(w, "Failed to render template", http.StatusInternalServerError)
-		return
-	}
-}
-
-// Health check endpoint
-func (h *Handlers) Health(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"status": "healthy",
-	})
 }
 
 // Utility function to check if request is from HTMX
