@@ -5,14 +5,21 @@ import "fmt"
 
 templ Album(album *models.Album) {
 	@Layout(album.Name) {
+		<div class="flex items-center justify-between mb-4">
+			<h2 class="text-2xl font-bold">{ album.Name }</h2>
+			<div class="flex gap-2">
+				<a class="btn btn-outline" href={ fmt.Sprintf("/upload?album_id=%d", album.ID) }>⬆️ Upload songs</a>
+				<button class="btn btn-primary" data-play-album data-album-id={ fmt.Sprintf("%d", album.ID) }>▶ Play album</button>
+			</div>
+		</div>
 		<ul class="list bg-base-100 rounded-box shadow-md">
 			for _, song := range album.Songs {
-				<li class="list-row">
+				<li class="list-row flex items-center justify-between" data-song-row={ fmt.Sprintf("%d", song.ID) }>
 					<div>
 						<div>{ song.Name }</div>
 						<div class="text-xs uppercase font-semibold opacity-60">{ song.Album.Artist.Name }</div>
 					</div>
-					<button class="btn btn-square btn-ghost" hx-get={ fmt.Sprintf("/play/%d", song.ID) }>
+					<button class="btn btn-square btn-ghost" data-play-song data-song-id={ fmt.Sprintf("%d", song.ID) }>
 						<svg class="size-[1.2em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M6 3L20 12 6 21 6 3z"></path></g></svg>
 					</button>
 				</li>
