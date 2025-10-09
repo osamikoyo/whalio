@@ -1,0 +1,49 @@
+package templates
+
+import "whalio/models"
+import "fmt"
+
+templ ArtistAlbumCard(album models.Album) {
+	<div class="card lg:card-side bg-base-100 shadow-sm hover:shadow-md transition-shadow">
+		<figure class="w-48">
+			if album.ImagePath != "" {
+				<img src={ "/images/" + album.ImagePath }  class="w-full h-48 object-cover rounded-lg" />
+			} else {
+				<div class="w-full h-48 bg-base-200 flex items-center justify-center rounded-lg">
+					<span class="text-base-content/50">No Cover</span>
+				</div>
+			}
+		</figure>
+		<div class="card-body">
+			<a class="card-title text-xl" href={fmt.Sprintf("/album/%d", album.ID)}>{ album.Name }</a>
+			<a class="text-base-content/70" href={fmt.Sprintf("/artist/%d", album.ArtistID)}>{ album.Artist.Name }</a>
+			<p class="text-sm text-base-content/50">{ album.Description }</p>
+		</div>
+	</div>
+}
+
+templ AlbumsList(albums []models.Album) {
+	<div class="container mx-auto px-4 py-8">
+		if len(albums) == 0 {
+			<div class="text-center py-12">
+				<p class="text-xl text-base-content/50">No albums found</p>
+			</div>
+		} else {
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+				for _, album := range albums {
+					@ArtistAlbumCard(album)
+				}
+			</div>
+		}
+	</div>
+}
+templ Artist(artist *models.Artist) {
+    @Layout(artist.Name) {
+          <div><img class="size-30 rounded-box" src={artist.ImagePath}/></div>
+        <div>
+            <h1>{artist.Name}</h1>
+        </div>
+
+        @AlbumsList(artist.Albums)
+    }
+}
