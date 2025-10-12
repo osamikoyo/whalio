@@ -1,20 +1,295 @@
 package templates
 
 templ Index() {
-	@Layout("Home") {
+	@Layout("Whalio - Music Streaming") {
 		<!-- Hero Section -->
-		<section class="hero min-h-96 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-3xl mb-12">
-			<div class="hero-content text-center">
-				<div class="max-w-md">
-					<div class="text-6xl mb-6">🐋</div>
-					<h1 class="text-5xl font-bold text-primary mb-6">Welcome to Whalio</h1>
-					<p class="text-lg text-base-content/80 mb-8">
-						Music streaming service with user file uploading
+		<section class="hero min-h-96 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-3xl mb-12 relative overflow-hidden">
+			<div class="absolute inset-0 bg-music-pattern opacity-5"></div>
+			<div class="hero-content text-center relative z-10">
+				<div class="max-w-3xl">
+					<div class="text-8xl mb-6 animate-bounce-in">
+						🎵
+					</div>
+					<h1 class="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-6">
+						Whalio
+					</h1>
+					<p class="text-xl text-base-content/80 mb-8 leading-relaxed max-w-2xl mx-auto">
+						Music streaming service with user file uploading. Discover, upload, and share your favorite music.
 					</p>
+					<div class="flex gap-4 justify-center flex-wrap">
+						<a href="/library" class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM21 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+							</svg>
+							Explore Library
+						</a>
+						<button class="btn btn-outline btn-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all" onclick="whalio.openModal('upload-modal')">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+							</svg>
+							Upload Music
+						</button>
+					</div>
 				</div>
 			</div>
 		</section>
-	
+
+		<!-- Quick Stats for Music -->
+		<section class="mb-12">
+			<div class="stats shadow-lg w-full bg-base-200">
+				<div class="stat">
+					<div class="stat-figure text-primary">
+						<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM21 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+						</svg>
+					</div>
+					<div class="stat-title">Total Songs</div>
+					<div class="stat-value text-primary" id="total-songs">-</div>
+					<div class="stat-desc">In your library</div>
+				</div>
+				
+				<div class="stat">
+					<div class="stat-figure text-secondary">
+						<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+						</svg>
+					</div>
+					<div class="stat-title">Albums</div>
+					<div class="stat-value text-secondary" id="total-albums">-</div>
+					<div class="stat-desc">Available to stream</div>
+				</div>
+				
+				<div class="stat">
+					<div class="stat-figure text-accent">
+						<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+						</svg>
+					</div>
+					<div class="stat-title">Artists</div>
+					<div class="stat-value text-accent" id="total-artists">-</div>
+					<div class="stat-desc">In collection</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section class="mb-12">
+			<div class="text-center mb-12">
+				<h2 class="text-4xl font-bold mb-4">Why Choose Whalio?</h2>
+				<p class="text-xl text-base-content/70 max-w-2xl mx-auto">
+					The ultimate music streaming experience with powerful features for music lovers.
+				</p>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				@MusicFeatureCard("🎧", "High Quality Audio", "Stream your music in crystal clear quality with support for multiple formats", "primary")
+				@MusicFeatureCard("📤", "Easy Upload", "Upload your own music collection and create personalized playlists", "secondary")
+				@MusicFeatureCard("🔍", "Smart Search", "Find your favorite songs, albums and artists with intelligent search", "accent")
+				@MusicFeatureCard("📱", "Mobile Friendly", "Enjoy your music on any device with our responsive design", "info")
+				@MusicFeatureCard("🚀", "Fast & Reliable", "Lightning-fast streaming with 99.9% uptime guarantee", "success")
+				@MusicFeatureCard("🎨", "Beautiful UI", "Modern, clean interface built with latest web technologies", "warning")
+			</div>
+		</section>
+
+		<!-- Music Player Demo -->
+		<section class="mb-12">
+			<div class="text-center mb-12">
+				<h2 class="text-4xl font-bold mb-4">Experience the Player</h2>
+				<p class="text-xl text-base-content/70">
+					Try our beautiful music player interface
+				</p>
+			</div>
+			
+			<div class="max-w-2xl mx-auto">
+				<div class="card bg-base-200 shadow-xl">
+					<div class="card-body">
+						<div class="flex items-center gap-4 mb-6">
+							<div class="avatar">
+								<div class="w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+									<span class="text-2xl">🎵</span>
+								</div>
+							</div>
+							<div>
+								<h3 class="font-bold text-lg">Now Playing</h3>
+								<p class="text-base-content/70">Demo Track</p>
+								<p class="text-sm text-base-content/50">Demo Artist</p>
+							</div>
+						</div>
+
+						<!-- Progress Bar -->
+						<div class="space-y-2">
+							<div class="flex justify-between text-sm text-base-content/50">
+								<span>0:00</span>
+								<span>3:42</span>
+							</div>
+							<progress class="progress progress-primary w-full" value="35" max="100"></progress>
+						</div>
+
+						<!-- Player Controls -->
+						<div class="flex justify-center items-center gap-4 mt-6">
+							<button class="btn btn-circle btn-ghost">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.333 4z"/>
+								</svg>
+							</button>
+							<button class="btn btn-circle btn-primary btn-lg">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293L12 11l.707-.707A1 1 0 0113.414 10H15M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+								</svg>
+							</button>
+							<button class="btn btn-circle btn-ghost">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z"/>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Quick Actions -->
+		<section class="mb-12">
+			<div class="text-center mb-8">
+				<h2 class="text-3xl font-bold mb-4">Quick Actions</h2>
+				<p class="text-lg text-base-content/70">
+					Get started with these common tasks
+				</p>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+				<a href="/library" class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+					<div class="card-body text-center">
+						<div class="text-4xl mb-4">📚</div>
+						<h3 class="card-title justify-center">Browse Library</h3>
+						<p class="text-sm text-base-content/70">Explore all your music</p>
+					</div>
+				</a>
+
+				<button onclick="whalio.openModal('upload-modal')" class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+					<div class="card-body text-center">
+						<div class="text-4xl mb-4">⬆️</div>
+						<h3 class="card-title justify-center">Upload Album</h3>
+						<p class="text-sm text-base-content/70">Add new music</p>
+					</div>
+				</button>
+
+				<button onclick="whalio.openModal('artist-modal')" class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+					<div class="card-body text-center">
+						<div class="text-4xl mb-4">🎤</div>
+						<h3 class="card-title justify-center">Add Artist</h3>
+						<p class="text-sm text-base-content/70">Create new artist</p>
+					</div>
+				</button>
+
+				<button onclick="discoverMusic()" class="card bg-base-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+					<div class="card-body text-center">
+						<div class="text-4xl mb-4">🔍</div>
+						<h3 class="card-title justify-center">Discover</h3>
+						<p class="text-sm text-base-content/70">Find new music</p>
+					</div>
+				</button>
+			</div>
+		</section>
+
+		<!-- Upload Modal -->
+		@UploadModal()
+
+		<!-- Artist Modal -->
+		@ArtistModal()
+
+		<!-- Load Stats -->
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				// Load statistics
+				fetch('/api/stats')
+					.then(response => response.json())
+					.then(data => {
+						if (data.songs !== undefined) document.getElementById('total-songs').textContent = data.songs;
+						if (data.albums !== undefined) document.getElementById('total-albums').textContent = data.albums;
+						if (data.artists !== undefined) document.getElementById('total-artists').textContent = data.artists;
+					})
+					.catch(error => {
+						console.error('Failed to load stats:', error);
+					});
+			});
+
+			function discoverMusic() {
+				whalio.showToast('🎵 Discover feature coming soon!', 'info');
+			}
+		</script>
 	}
 }
 
+templ MusicFeatureCard(icon, title, description, colorClass string) {
+	<div class={ "card bg-base-200 shadow-xl card-hover border-t-4", "border-" + colorClass }>
+		<div class="card-body text-center">
+			<div class="text-5xl mb-4">{ icon }</div>
+			<h3 class={ "card-title justify-center text-xl", "text-" + colorClass }>{ title }</h3>
+			<p class="text-sm text-base-content/70 leading-relaxed">{ description }</p>
+		</div>
+	</div>
+}
+
+templ UploadModal() {
+	<dialog id="upload-modal" class="modal">
+		<div class="modal-box max-w-md">
+			<h3 class="font-bold text-2xl mb-6 text-primary">🎵 Upload Music</h3>
+			<div class="space-y-4">
+				<div class="alert alert-info">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span>Choose how you want to add music to your library</span>
+				</div>
+
+				<div class="grid grid-cols-1 gap-4">
+					<a href="/create/album" class="btn btn-primary btn-lg">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+						</svg>
+						Upload Album
+					</a>
+				</div>
+			</div>
+
+			<div class="modal-action">
+				<button class="btn" onclick="whalio.closeModal('upload-modal')">Cancel</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button onclick="whalio.closeModal('upload-modal')">close</button>
+		</form>
+	</dialog>
+}
+
+templ ArtistModal() {
+	<dialog id="artist-modal" class="modal">
+		<div class="modal-box max-w-md">
+			<h3 class="font-bold text-2xl mb-6 text-secondary">🎤 Add Artist</h3>
+			<div class="space-y-4">
+				<div class="alert alert-info">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span>Create a new artist profile in your music library</span>
+				</div>
+
+				<div class="grid grid-cols-1 gap-4">
+					<a href="/create/artist" class="btn btn-secondary btn-lg">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+						</svg>
+						Add New Artist
+					</a>
+				</div>
+			</div>
+
+			<div class="modal-action">
+				<button class="btn" onclick="whalio.closeModal('artist-modal')">Cancel</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button onclick="whalio.closeModal('artist-modal')">close</button>
+		</form>
+	</dialog>
+}
