@@ -1,0 +1,116 @@
+package templates
+
+import "whalio/models"
+import "fmt"
+
+templ SearchResults(albums []models.Album, artists []models.Artist, query string) {
+	<div class="space-y-6">
+		<div class="flex items-center justify-between">
+			<h3 class="text-lg font-semibold">
+				Search results for "<span class="text-primary">{ query }</span>"
+			</h3>
+			<div class="text-sm text-base-content/60">
+				{ fmt.Sprintf("%d albums, %d artists found", len(albums), len(artists)) }
+			</div>
+		</div>
+
+		if len(albums) == 0 && len(artists) == 0 {
+			<div class="text-center py-12">
+				<div class="text-6xl mb-4 opacity-50">🔍</div>
+				<h4 class="text-xl font-bold text-base-content/50 mb-2">No Results Found</h4>
+				<p class="text-base-content/40">Try searching with different keywords</p>
+			</div>
+		} else {
+			if len(albums) > 0 {
+				<div class="mb-8">
+					<h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+						<span class="text-2xl">💿</span>
+						Albums ({ fmt.Sprintf("%d", len(albums)) })
+					</h4>
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+						for _, album := range albums {
+							@SearchAlbumCard(album)
+						}
+					</div>
+				</div>
+			}
+
+			if len(artists) > 0 {
+				<div>
+					<h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+						<span class="text-2xl">🎤</span>
+						Artists ({ fmt.Sprintf("%d", len(artists)) })
+					</h4>
+					<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+						for _, artist := range artists {
+							@SearchArtistCard(artist)
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+}
+
+templ SearchAlbumCard(album models.Album) {
+	<div class="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-200 card-compact">
+		<figure class="h-32">
+			if album.ImagePath != "" {
+				<img 
+					src={ "/images/" + album.ImagePath } 
+					alt={ album.Name }
+					class="w-full h-full object-cover"
+				/>
+			} else {
+				<div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+					<span class="text-3xl opacity-50">💿</span>
+				</div>
+			}
+		</figure>
+		<div class="card-body p-3">
+			<h5 class="font-semibold text-sm line-clamp-1">
+				<a href={ fmt.Sprintf("/album/%d", album.ID) } class="hover:text-primary transition-colors">
+					{ album.Name }
+				</a>
+			</h5>
+			<p class="text-xs text-base-content/60 line-clamp-1">
+				<a href={ fmt.Sprintf("/artist/%d", album.ArtistID) } class="hover:text-secondary transition-colors">
+					{ album.Artist.Name }
+				</a>
+			</p>
+			if album.Year > 0 {
+				<div class="badge badge-ghost badge-xs">{ fmt.Sprintf("%d", album.Year) }</div>
+			}
+		</div>
+	</div>
+}
+
+templ SearchArtistCard(artist models.Artist) {
+	<div class="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-200 card-compact">
+		<figure class="h-24">
+			if artist.ImagePath != "" {
+				<img 
+					src={ "/images/" + artist.ImagePath } 
+					alt={ artist.Name }
+					class="w-full h-full object-cover"
+				/>
+			} else {
+				<div class="w-full h-full bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center">
+					<span class="text-2xl opacity-50">🎤</span>
+				</div>
+			}
+		</figure>
+		<div class="card-body p-3 text-center">
+			<h5 class="font-semibold text-sm line-clamp-1">
+				<a href={ fmt.Sprintf("/artist/%d", artist.ID) } class="hover:text-secondary transition-colors">
+					{ artist.Name }
+				</a>
+			</h5>
+			if len(artist.Albums) > 0 {
+				<div class="badge badge-secondary badge-xs">
+					{ fmt.Sprintf("%d albums", len(artist.Albums)) }
+				</div>
+			}
+		</div>
+	</div>
+}
