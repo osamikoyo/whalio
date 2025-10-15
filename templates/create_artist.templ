@@ -1,0 +1,68 @@
+package templates
+
+templ CreateArtistPage() {
+    @Layout("Create Artist") {
+            <div class="card w-full max-w-md shadow-xl p-6">
+        <h2 class="text-2xl font-bold text-center mb-6">Артист</h2>
+        <form 
+            hx-post="/api/create/artist" 
+            hx-target="#response" 
+            hx-swap="innerHTML" 
+            hx-redirect="/library"
+            class="space-y-4"
+            enctype="multipart/form-data"
+        >
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Имя</span>
+                </label>
+                <input 
+                    type="text" 
+                    name="name" 
+                    placeholder="название" 
+                    class="input input-bordered w-full"
+                    required
+                >
+            </div>
+
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Описание</span>
+                </label>
+                <textarea 
+                    name="desc" 
+                    placeholder="описание" 
+                    class="textarea textarea-bordered w-full"
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Картинка</span>
+                </label>
+                <input 
+                    type="file" 
+                    name="file" 
+                    class="file-input file-input-bordered w-full"
+                    required
+                >
+            </div>
+
+            <div class="form-control mt-6">
+                <button 
+                    type="submit" 
+                    class="btn btn-primary w-full"
+                    hx-indicator=".htmx-indicator"
+                >
+                    Создать
+                </button>
+                <span class="htmx-indicator text-center mt-2">Отправка...</span>
+            </div>
+        </form>
+
+        <div id="response" class="mt-4 text-center"></div>
+    </div>
+    }
+}
