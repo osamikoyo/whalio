@@ -1,0 +1,375 @@
+package templates
+
+import "whalio/models"
+import "fmt"
+
+templ UploadSongsPage(albums []models.Album) {
+	@Layout("Upload Songs") {
+		<!-- Header Section -->
+		<section class="mb-8">
+			<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+				<div>
+					<h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+						🎵 Upload Songs
+					</h1>
+					<p class="text-base-content/70">
+						Add new songs to your music library
+					</p>
+				</div>
+				<div class="flex gap-2 flex-wrap">
+					<a href="/library" class="btn btn-outline">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+						</svg>
+						Back to Library
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- Upload Form -->
+		<section class="mb-8">
+			<div class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title text-2xl mb-6 flex items-center gap-2">
+						<span class="text-3xl">📤</span>
+						Upload New Songs
+					</h2>
+					
+					if len(albums) == 0 {
+						<div class="alert alert-warning">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+							</svg>
+							<div>
+								<h3 class="font-bold">No Albums Available!</h3>
+								<div class="text-xs">You need to create an album first before uploading songs.</div>
+							</div>
+							<div>
+								<a href="/create/album" class="btn btn-sm btn-warning">Create Album</a>
+							</div>
+						</div>
+					} else {
+						<!-- Drag & Drop Area -->
+						<div id="upload-area" class="border-2 border-dashed border-base-300 rounded-xl p-8 text-center bg-base-100 hover:bg-base-50 transition-colors cursor-pointer mb-6">
+							<div class="text-6xl mb-4 opacity-50">🎵</div>
+							<h3 class="text-xl font-semibold mb-2">Drag & Drop Audio Files</h3>
+							<p class="text-base-content/60 mb-4">or click to select files</p>
+							<p class="text-sm text-base-content/40">Supported formats: MP3, WAV, FLAC, OGG, M4A</p>
+							<input 
+								type="file" 
+								id="file-input" 
+								class="hidden" 
+								multiple 
+								accept="audio/*"
+							/>
+						</div>
+
+						<!-- Upload Form -->
+						<form id="upload-form" class="space-y-6" enctype="multipart/form-data">
+							<div class="grid md:grid-cols-2 gap-6">
+								<div class="form-control">
+									<label class="label">
+										<span class="label-text font-semibold">Select Album</span>
+									</label>
+									<select name="album_id" class="select select-bordered" required>
+										<option disabled selected>Choose an album...</option>
+										for _, album := range albums {
+											<option value={ fmt.Sprintf("%d", album.ID) }>
+												{ album.Name } - { album.Artist.Name }
+											</option>
+										}
+									</select>
+								</div>
+
+								<div class="form-control">
+									<label class="label">
+										<span class="label-text font-semibold">Upload Mode</span>
+									</label>
+									<select id="upload-mode" class="select select-bordered" onchange="toggleUploadMode()">
+										<option value="single">Single Song</option>
+										<option value="batch">Batch Upload</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- Single Song Mode -->
+							<div id="single-mode" class="space-y-4">
+								<div class="form-control">
+									<label class="label">
+										<span class="label-text font-semibold">Song Title</span>
+									</label>
+									<input 
+										type="text" 
+										name="song_title" 
+										placeholder="Enter song title..." 
+										class="input input-bordered"
+									/>
+									<label class="label">
+										<span class="label-text-alt">Leave empty to use filename</span>
+									</label>
+								</div>
+							</div>
+
+							<!-- Batch Mode Info -->
+							<div id="batch-mode" class="hidden">
+								<div class="alert alert-info">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+									<span>In batch mode, song titles will be automatically extracted from filenames.</span>
+								</div>
+							</div>
+
+							<!-- Upload Progress -->
+							<div id="upload-progress" class="hidden space-y-4">
+								<div class="alert alert-info">
+									<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+									<span>Uploading songs...</span>
+								</div>
+								<progress id="progress-bar" class="progress progress-primary w-full" value="0" max="100"></progress>
+								<div id="progress-text" class="text-center text-sm text-base-content/60"></div>
+							</div>
+
+							<!-- Upload Results -->
+							<div id="upload-results" class="space-y-2"></div>
+
+							<!-- Submit Button -->
+							<div class="form-control">
+								<button type="submit" class="btn btn-primary btn-lg" id="submit-btn" disabled>
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+									</svg>
+									Upload Songs
+								</button>
+							</div>
+						</form>
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- Recent Uploads -->
+		<section class="mb-8">
+			<div class="card bg-base-200 shadow-xl">
+				<div class="card-body">
+					<h2 class="card-title text-xl mb-4 flex items-center gap-2">
+						<span class="text-2xl">⏰</span>
+						Recent Uploads
+					</h2>
+					<div id="recent-uploads">
+						<div class="text-center py-8 text-base-content/50">
+							No recent uploads
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Upload JavaScript -->
+		<script>
+			let selectedFiles = [];
+			const uploadArea = document.getElementById('upload-area');
+			const fileInput = document.getElementById('file-input');
+			const uploadForm = document.getElementById('upload-form');
+			const submitBtn = document.getElementById('submit-btn');
+			const progressSection = document.getElementById('upload-progress');
+			const progressBar = document.getElementById('progress-bar');
+			const progressText = document.getElementById('progress-text');
+			const resultsDiv = document.getElementById('upload-results');
+
+			// Preselect album from URL if present
+			document.addEventListener('DOMContentLoaded', function(){
+				const params = new URLSearchParams(window.location.search);
+				const preId = params.get('album_id');
+				if (preId) {
+					const sel = document.querySelector('select[name="album_id"]');
+					if (sel) {
+						const opt = Array.from(sel.options).find(o => o.value === preId);
+						if (opt) {
+							sel.value = preId;
+						}
+					}
+				}
+			});
+
+			// Drag and drop handlers
+			uploadArea.addEventListener('click', () => fileInput.click());
+			uploadArea.addEventListener('dragover', handleDragOver);
+			uploadArea.addEventListener('drop', handleDrop);
+			fileInput.addEventListener('change', handleFileSelect);
+
+			function handleDragOver(e) {
+				e.preventDefault();
+				uploadArea.classList.add('border-primary', 'bg-primary/5');
+			}
+
+			uploadArea.addEventListener('dragleave', () => {
+				uploadArea.classList.remove('border-primary', 'bg-primary/5');
+			});
+
+			function handleDrop(e) {
+				e.preventDefault();
+				uploadArea.classList.remove('border-primary', 'bg-primary/5');
+				const files = Array.from(e.dataTransfer.files);
+				handleFiles(files);
+			}
+
+			function handleFileSelect(e) {
+				const files = Array.from(e.target.files);
+				handleFiles(files);
+			}
+
+			function handleFiles(files) {
+				// Filter audio files only
+				const audioFiles = files.filter(file => file.type.startsWith('audio/'));
+				
+				if (audioFiles.length === 0) {
+					whalio.showToast('Please select audio files only', 'error');
+					return;
+				}
+
+				if (audioFiles.length !== files.length) {
+					whalio.showToast(`Selected ${audioFiles.length} audio files (${files.length - audioFiles.length} non-audio files ignored)`, 'warning');
+				}
+
+				selectedFiles = audioFiles;
+				updateFileDisplay();
+				submitBtn.disabled = false;
+			}
+
+			function updateFileDisplay() {
+				const fileCount = selectedFiles.length;
+				const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+				const sizeText = formatFileSize(totalSize);
+
+				uploadArea.innerHTML = `
+					<div class="text-4xl mb-2 text-success">✓</div>
+					<h3 class="text-lg font-semibold text-success mb-2">${fileCount} Files Selected</h3>
+					<p class="text-base-content/60">${sizeText} total</p>
+					<p class="text-sm text-base-content/40 mt-2">Click to select different files</p>
+				`;
+			}
+
+			function formatFileSize(bytes) {
+				if (bytes === 0) return '0 B';
+				const k = 1024;
+				const sizes = ['B', 'KB', 'MB', 'GB'];
+				const i = Math.floor(Math.log(bytes) / Math.log(k));
+				return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+			}
+
+			function toggleUploadMode() {
+				const mode = document.getElementById('upload-mode').value;
+				const singleMode = document.getElementById('single-mode');
+				const batchMode = document.getElementById('batch-mode');
+
+				if (mode === 'single') {
+					singleMode.classList.remove('hidden');
+					batchMode.classList.add('hidden');
+				} else {
+					singleMode.classList.add('hidden');
+					batchMode.classList.remove('hidden');
+				}
+			}
+
+			// Form submission
+			uploadForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+
+				if (selectedFiles.length === 0) {
+					whalio.showToast('Please select files to upload', 'error');
+					return;
+				}
+
+				const formData = new FormData();
+				const albumId = new FormData(uploadForm).get('album_id');
+				const songTitle = new FormData(uploadForm).get('song_title');
+				const uploadMode = document.getElementById('upload-mode').value;
+
+				if (!albumId) {
+					whalio.showToast('Please select an album', 'error');
+					return;
+				}
+
+				// Show progress
+				progressSection.classList.remove('hidden');
+				submitBtn.disabled = true;
+
+				try {
+					for (let i = 0; i < selectedFiles.length; i++) {
+						const file = selectedFiles[i];
+						const progress = Math.round((i / selectedFiles.length) * 100);
+						
+						progressBar.value = progress;
+						progressText.textContent = `Uploading ${file.name} (${i + 1}/${selectedFiles.length})`;
+
+						const fileFormData = new FormData();
+						fileFormData.append('audio_file', file);
+						fileFormData.append('album_id', albumId);
+						
+						// Use custom title for single mode, filename for batch mode
+						const title = (uploadMode === 'single' && songTitle) ? songTitle : file.name.replace(/\.[^/.]+$/, "");
+						fileFormData.append('song_title', title);
+
+						const response = await fetch('/api/songs/upload', {
+							method: 'POST',
+							body: fileFormData
+						});
+
+						const result = await response.text();
+						
+						if (response.ok) {
+							showUploadResult(file.name, true, 'Song uploaded successfully');
+						} else {
+							showUploadResult(file.name, false, result);
+						}
+					}
+
+					progressBar.value = 100;
+					progressText.textContent = 'Upload complete!';
+					whalio.showToast('Upload completed!', 'success');
+
+					// Reset form after a delay
+					setTimeout(() => {
+						resetForm();
+					}, 2000);
+
+				} catch (error) {
+					whalio.showToast('Upload failed: ' + error.message, 'error');
+					submitBtn.disabled = false;
+				}
+			});
+
+			function showUploadResult(filename, success, message) {
+				const alertClass = success ? 'alert-success' : 'alert-error';
+				const icon = success ? '✓' : '✗';
+				
+				const resultElement = document.createElement('div');
+				resultElement.className = `alert ${alertClass} alert-sm`;
+				resultElement.innerHTML = `
+					<span>${icon} ${filename}: ${message}</span>
+				`;
+				
+				resultsDiv.appendChild(resultElement);
+			}
+
+			function resetForm() {
+				selectedFiles = [];
+				fileInput.value = '';
+				submitBtn.disabled = true;
+				progressSection.classList.add('hidden');
+				resultsDiv.innerHTML = '';
+				
+				uploadArea.innerHTML = `
+					<div class="text-6xl mb-4 opacity-50">🎵</div>
+					<h3 class="text-xl font-semibold mb-2">Drag & Drop Audio Files</h3>
+					<p class="text-base-content/60 mb-4">or click to select files</p>
+					<p class="text-sm text-base-content/40">Supported formats: MP3, WAV, FLAC, OGG, M4A</p>
+				`;
+			}
+		</script>
+	}
+}
