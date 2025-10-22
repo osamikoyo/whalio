@@ -205,7 +205,7 @@ func (c *Core) DeleteArtist(id uint) error {
 		return err
 	}
 
-	if err = c.storage.DeleteFile(filepath.Join(c.cfg.ImageDir, artist.ImagePath));err != nil{
+	if err = c.storage.DeleteFile(filepath.Join(c.cfg.ImageDir, artist.ImagePath)); err != nil {
 		return err
 	}
 
