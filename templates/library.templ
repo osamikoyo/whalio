@@ -1,31 +1,338 @@
 package templates
 
 import "whalio/models"
+import "fmt"
 
 templ Library(albums []models.Album, artists []models.Artist) {
-	@Layout("Library") {
-		<div class="join">
-			for _, album := range albums {
-				<div class="avatar">
-					<div class="w-24 rounded">
-						<img src={album.ImagePath}/>
+	@Layout("Music Library") {
+		<!-- Header Section -->
+		<section class="mb-8">
+			<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+				<div>
+					<h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+						🎵 Your Music Library
+					</h1>
+					<p class="text-base-content/70">
+						Discover and manage your personal music collection
+					</p>
+				</div>
+				<div class="flex gap-2 flex-wrap">
+					<a href="/create/album" class="btn btn-primary">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+						</svg>
+						Add Album
+					</a>
+					<a href="/create/artist" class="btn btn-secondary">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+						</svg>
+						Add Artist
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- Search and Filter Section -->
+		<section class="mb-8">
+			<div class="card bg-base-200 shadow-lg">
+				<div class="card-body">
+					<div class="flex flex-col md:flex-row gap-4">
+						<div class="flex-1">
+							<div class="form-control">
+								<div class="input-group">
+									<input 
+										type="text" 
+										name="q"
+										placeholder="Search albums, artists, or songs..." 
+										class="input input-bordered w-full"
+										id="search-input"
+										hx-get="/api/search"
+										hx-trigger="keyup changed delay:500ms"
+										hx-target="#search-results"
+										hx-include="#search-input"
+									/>
+									<button class="btn btn-square">
+										<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+										</svg>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="flex gap-2">
+							<div class="dropdown dropdown-end">
+								<button class="btn btn-outline" tabindex="0">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"/>
+									</svg>
+									Filter
+								</button>
+								<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+									<li><a onclick="filterBy('all')">All</a></li>
+									<li><a onclick="filterBy('albums')">Albums Only</a></li>
+									<li><a onclick="filterBy('artists')">Artists Only</a></li>
+								</ul>
+							</div>
+							<div class="dropdown dropdown-end">
+								<button class="btn btn-outline" tabindex="0">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+									</svg>
+									Sort
+								</button>
+								<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+									<li><a onclick="sortBy('name')">Name A-Z</a></li>
+									<li><a onclick="sortBy('date')">Date Added</a></li>
+									<li><a onclick="sortBy('artist')">Artist</a></li>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</div>
+			</div>
+		</section>
 
-                <h2 class="text-primary">{album.Name}</h2>
-                <a>{album.Artist.Name}</a>
-			}
-		</div>
-		<div class="join">
-			for _, artist := range artists {
-				<div class="avatar">
-					<div class="w-24 rounded">
-						<img src={artist.ImagePath}/>
-					</div>
+		<!-- Search Results (Hidden by default) -->
+		<div id="search-results" class="mb-8 hidden"></div>
+
+		<!-- Albums Section -->
+		<section class="mb-12" id="albums-section">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-3xl font-bold flex items-center gap-2">
+					<span class="text-4xl">💿</span>
+					Albums
+					<div class="badge badge-primary badge-lg">{ fmt.Sprintf("%d", len(albums)) }</div>
+				</h2>
+				<a href="/create/album" class="btn btn-primary btn-sm">
+					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+					</svg>
+					Add Album
+				</a>
+			</div>
+
+			if albums == nil || len(albums) == 0 {
+				<div class="text-center py-16">
+					<div class="text-8xl mb-4 opacity-50">🎵</div>
+					<h3 class="text-2xl font-bold text-base-content/50 mb-2">No Albums Found</h3>
+					<p class="text-base-content/40 mb-6">Start building your music library by adding your first album</p>
+					<a href="/create/album" class="btn btn-primary">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+						</svg>
+						Add Your First Album
+					</a>
 				</div>
-
-                <h2 class="text-primary">{artist.Name}</h2>
+			} else {
+				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+					for _, album := range albums {
+						@AlbumCard(album)
+					}
+				</div>
 			}
-		</div>
+		</section>
+
+		<!-- Artists Section -->
+		<section class="mb-12" id="artists-section">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-3xl font-bold flex items-center gap-2">
+					<span class="text-4xl">🎤</span>
+					Artists
+					<div class="badge badge-secondary badge-lg">{ fmt.Sprintf("%d", len(artists)) }</div>
+				</h2>
+				<a href="/create/artist" class="btn btn-secondary btn-sm">
+					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+					</svg>
+					Add Artist
+				</a>
+			</div>
+
+			if artists == nil || len(artists) == 0 {
+				<div class="text-center py-16">
+					<div class="text-8xl mb-4 opacity-50">🎤</div>
+					<h3 class="text-2xl font-bold text-base-content/50 mb-2">No Artists Found</h3>
+					<p class="text-base-content/40 mb-6">Add artists to organize your music collection better</p>
+					<a href="/create/artist" class="btn btn-secondary">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+						</svg>
+						Add Your First Artist
+					</a>
+				</div>
+			} else {
+				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+					for _, artist := range artists {
+						@ArtistCard(artist)
+					}
+				</div>
+			}
+		</section>
+
+		<!-- Library Stats -->
+		<section class="mt-12">
+			<div class="stats stats-vertical lg:stats-horizontal shadow w-full">
+				<div class="stat">
+					<div class="stat-title">Total Albums</div>
+					<div class="stat-value text-primary">{ fmt.Sprintf("%d", len(albums)) }</div>
+					<div class="stat-desc">In your collection</div>
+				</div>
+				<div class="stat">
+					<div class="stat-title">Total Artists</div>
+					<div class="stat-value text-secondary">{ fmt.Sprintf("%d", len(artists)) }</div>
+					<div class="stat-desc">In your library</div>
+				</div>
+				<div class="stat">
+					<div class="stat-title">Total Songs</div>
+					<div class="stat-value text-accent" id="total-songs-stat">-</div>
+					<div class="stat-desc">Ready to play</div>
+				</div>
+			</div>
+		</section>
+
+		<script>
+			// Filter and search functionality
+			function filterBy(type) {
+				const albumsSection = document.getElementById('albums-section');
+				const artistsSection = document.getElementById('artists-section');
+				
+				switch(type) {
+					case 'albums':
+						albumsSection.style.display = 'block';
+						artistsSection.style.display = 'none';
+						break;
+					case 'artists':
+						albumsSection.style.display = 'none';
+						artistsSection.style.display = 'block';
+						break;
+					default:
+						albumsSection.style.display = 'block';
+						artistsSection.style.display = 'block';
+				}
+				whalio.showToast('Filtered by: ' + type, 'info');
+			}
+
+			function sortBy(criteria) {
+				whalio.showToast('Sorting by: ' + criteria, 'info');
+				// TODO: Implement sorting logic
+			}
+
+			// Load total songs count
+			document.addEventListener('DOMContentLoaded', function() {
+				fetch('/api/stats')
+					.then(response => response.json())
+					.then(data => {
+						if (data.songs !== undefined) {
+							document.getElementById('total-songs-stat').textContent = data.songs;
+						}
+					})
+					.catch(error => console.error('Failed to load stats:', error));
+			});
+
+			// Search functionality
+			const searchInput = document.getElementById('search-input');
+			const searchResults = document.getElementById('search-results');
+			const albumsSection = document.getElementById('albums-section');
+			const artistsSection = document.getElementById('artists-section');
+
+			if (searchInput) {
+				searchInput.addEventListener('input', function() {
+					if (this.value.trim() !== '') {
+						// Show search results, hide main sections
+						searchResults.classList.remove('hidden');
+						albumsSection.style.display = 'none';
+						artistsSection.style.display = 'none';
+					} else {
+						// Hide search results, show main sections
+						searchResults.classList.add('hidden');
+						albumsSection.style.display = 'block';
+						artistsSection.style.display = 'block';
+					}
+				});
+			}
+		</script>
 	}
+}
+
+templ AlbumCard(album models.Album) {
+	<div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+		<figure class="relative overflow-hidden">
+			if album.ImagePath != "" {
+				<img 
+					src={ "/images/" + album.ImagePath } 
+					alt={ album.Name }
+					class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+				/>
+			} else {
+				<div class="w-full h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+					<div class="text-center">
+						<span class="text-4xl mb-2 block opacity-50">💿</span>
+						<span class="text-sm text-base-content/50">No Cover</span>
+					</div>
+				</div>
+			}
+					<!-- Overlay with play button -->
+					<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+						<button class="btn btn-circle btn-primary btn-lg shadow-lg transform scale-75 group-hover:scale-100 transition-transform" data-play-album data-album-id={ fmt.Sprintf("%d", album.ID) }>
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293L12 11l.707-.707A1 1 0 0113.414 10H15M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+							</svg>
+						</button>
+					</div>
+		</figure>
+		<div class="card-body p-4">
+			<h3 class="card-title text-base line-clamp-2">
+				<a href={ fmt.Sprintf("/album/%d", album.ID) } class="hover:text-primary transition-colors">
+					{ album.Name }
+				</a>
+			</h3>
+			<p class="text-sm text-base-content/60 line-clamp-1">
+				<a href={ fmt.Sprintf("/artist/%d", album.ArtistID) } class="hover:text-secondary transition-colors">
+					{ album.Artist.Name }
+				</a>
+			</p>
+			if album.Year > 0 {
+				<div class="flex items-center gap-2 mt-2">
+					<div class="badge badge-outline badge-sm">{ fmt.Sprintf("%d", album.Year) }</div>
+					if len(album.Songs) > 0 {
+						<div class="badge badge-ghost badge-sm">{ fmt.Sprintf("%d songs", len(album.Songs)) }</div>
+					}
+				</div>
+			}
+		</div>
+	</div>
+}
+
+templ ArtistCard(artist models.Artist) {
+	<div class="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group">
+		<figure class="relative overflow-hidden">
+			if artist.ImagePath != "" {
+				<img 
+					src={ "/images/" + artist.ImagePath } 
+					alt={ artist.Name }
+					class="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
+				/>
+			} else {
+				<div class="w-full h-32 bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center">
+					<div class="text-center">
+						<span class="text-3xl mb-1 block opacity-50">🎤</span>
+						<span class="text-xs text-base-content/50">No Photo</span>
+					</div>
+				</div>
+			}
+		</figure>
+		<div class="card-body p-4 text-center">
+			<h3 class="card-title text-sm justify-center line-clamp-2">
+				<a href={ fmt.Sprintf("/artist/%d", artist.ID) } class="hover:text-secondary transition-colors">
+					{ artist.Name }
+				</a>
+			</h3>
+			if len(artist.Albums) > 0 {
+				<div class="badge badge-secondary badge-sm mt-2">
+					{ fmt.Sprintf("%d albums", len(artist.Albums)) }
+				</div>
+			}
+		</div>
+	</div>
 }
